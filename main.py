@@ -1,15 +1,13 @@
-from spy_details import spy_name, spy_salutation, spy_rating, spy_age, spy_is_online
+from spy_details import spy
 
 import sys
 
 STATUS_MESSAGES = ['My name is Bond, James Bond', 'Shaken, not stirred.', 'Keeping the British end up, Sir']
 
+friends = []
 
-friends_name = []
-friends_age = []
-friends_rating = []
-friends_is_online = []
 
+###### ADD STATUS MODULE
 
 def add_status(current_status_message):
 
@@ -36,25 +34,31 @@ def add_status(current_status_message):
 
             STATUS_MESSAGES.append(updated_status_message)
 
+
     elif default.upper() == "Y":
 
         item_position = 1
 
         for message in STATUS_MESSAGES:
+
             print '%d. %s' % (item_position, message)
+
             item_position = item_position + 1
 
         message_selection = int(raw_input("\nChoose from the above messages "))
 
         if len(STATUS_MESSAGES) >= message_selection:
+
             updated_status_message = STATUS_MESSAGES[message_selection - 1]
 
     else:
+
         print 'The option you chose is not valid! Press either y or n.'
 
     if updated_status_message:
 
         print 'Your updated status message is: %s' % (updated_status_message)
+
         print"Status Successfully updated \n Spy select other activity from menu to move further in this application"
 
     else:
@@ -65,34 +69,80 @@ def add_status(current_status_message):
 
 
 
+###### ADD A FRIEND MODULE
+
 def add_friend():
 
-    new_name = raw_input("Please add your friend's name: ")
 
-    new_salutation = raw_input("Are they Mr. or Ms.?: ")
+    new_friend = {
+        'name': '',
+        'salutation': '',
+        'age': 0,
+        'rating': 0.0
+    }
 
-    new_name = new_name + " " + new_salutation
+    # using dictionary data type, there is need to use "" again and again when we use input so to avoid it i preferred here using raw input..
+    new_friend['name'] = raw_input("Please add your friend's name: ")
 
-    new_age = input("Age?")
+    new_friend['salutation'] = raw_input("Are they Mr. or Ms.?: ")
 
-    new_rating = input("Spy rating?")
+    new_friend['name'] = new_friend['salutation'] + " " + new_friend['name']
 
-    if len(new_name) > 0 and new_age > 12 and new_rating >= spy_rating:
+    new_friend['age'] = raw_input("Age?")
 
-        friends_name.append(new_name)
-        friends_age.append(new_age)
-        friends_rating.append(new_rating)
-        friends_is_online.append(True)
-        print 'Friend Added Successfully'
-        print "Spy let\'s do something further,select from menu your preferable option"
+    new_friend['rating'] = raw_input("Spy rating?")
+
+    if len(new_friend['name']) > 0 and new_friend['age'] > 12 and new_friend['rating'] >= spy['rating']:
+
+        friends.append(new_friend)
+
+        print 'Friend Added Successfully!'
 
     else:
 
         print 'Sorry! Invalid entry. We can\'t add spy with the details you provided'
 
-    return len(friends_name)
+    return len(friends)
 
-def start_chat(spy_name, spy_age, spy_rating):
+
+
+###### SELECT A FRIEND MODULE
+
+
+def select_friend():
+
+
+    item_number = 0
+
+    for friend in friends:
+
+        print '%s aged %d with rating %.2f is online' % (friend['name'], friend['age'], friend['rating'])
+
+        item_number = item_number + 1
+
+    friend_selection = int(raw_input("\nSelect Friend "))
+
+
+    if len(friends) >= friend_selection:
+
+        selected_friend = friends(friend_selection-1)
+
+    if selected_friend:
+
+        print 'Your selected friend is %s' % (selected_friend)
+
+        print"friend successfully selected"
+
+    else:
+
+        print 'You do not have any friend yet to select'
+
+    return friend_selection-1
+
+
+###### START CHAT METHOD
+
+def start_chat(spy):
 
     show_menu = True
 
@@ -107,26 +157,26 @@ def start_chat(spy_name, spy_age, spy_rating):
 
         if menu_choice == 1:
 
-            print "Dear %s add a status update that will disapper automatically after 24 hours" % (spy_name)
+            print "Dear %s add a status update that will disapper automatically after 24 hours" % (spy['name'])
             current_status_message = add_status(current_status_message)
 
         elif menu_choice == 2:
 
-            print "%s you can add a friend" % (spy_name)
+            print "%s you can add a friend" % (spy['name'])
             number_of_friends = add_friend()
             print 'You have %d friends' % (number_of_friends)
 
         elif menu_choice == 3:
 
-            print "%s you should have secrecy let\'s send secret messages to your friends" % (spy_name)
+            print "%s you should have secrecy let\'s send secret messages to your friends" % (spy['name'])
 
         elif menu_choice == 4:
 
-            print "Hey %s let\'s read personal messages" % (spy_name)
+            print "Hey %s let\'s read personal messages" % (spy['name'])
 
         elif menu_choice == 5:
 
-            print "Oh Yea!!\n %s now let\'s read chats from other users" % (spy_name)
+            print "Oh Yea!!\n %s now let\'s read chats from other users" % (spy['name'])
 
         elif menu_choice == 6:
 
@@ -134,12 +184,12 @@ def start_chat(spy_name, spy_age, spy_rating):
 
         else:
 
-            print "%s kindly choose a valid menu option" % (spy_name)
+            print "%s kindly choose a valid menu option" % (spy['name'])
 
 
     #while menu_choice != 6:
 
-        #start_chat(spy_name,spy_age,spy_rating)
+        #start_chat(spy)
 
     print("Good bye")
 
@@ -148,75 +198,79 @@ print "Hello!"
 
 print 'Let\'s get started'
 
-question = "Do you want to continue as " + spy_salutation + " " + spy_name + " (Y\N)? "
+question = "Do you want to continue as " + spy['salutation'] + " " + spy['name'] + " (Y\N)? "
 existing = raw_input(question)
 
 if existing.upper() == "Y" :
-  print "Welcome %s to spychat having age %d with rating %.2f" % (spy_name,spy_age,spy_rating)
+  print "Welcome %s to spychat having age %d with rating %.2f" % (spy['name'],spy['age'],spy['rating'])
 
 
-  start_chat(spy_name,spy_age,spy_rating)
+  start_chat(spy)
 
 
 else:
 
-  print "Dear Spy Firstly Create A New Account So Enter Your Details Carefully."
+    spy = {
+        'name': '',
+        'salutation': '',
+        'age': 0,
+        'rating': 0.0,
+        'is_online': False
+    }
 
-  spy_name = raw_input("Welcome to spy chat, you must tell me your spy name first: ")
+    print "Dear Spy Firstly Create A New Account So Enter Your Details Carefully."
 
-
-  # spy_name cannot be empty and can have only alphabets.
-  if len(spy_name) > 0 and spy_name.isalpha():
-
-      print 'Welcome ' + spy_name + '. Glad to have you back with us.'
-
-      spy_salutation = raw_input("Should I call you Mister or Miss?: ")
-
-      spy_name = spy_salutation + " " + spy_name
-
-      print "Alright " + spy_name + ". I'd like to know a little bit more about you before we proceed..."
-
-      # duck-typing.
-      spy_age = 0
-
-      spy_rating = 0.0
-
-      spy_is_online = False
-
-      # spy_age = input("What is your age?")
-      spy_age = int(raw_input("What is your age?")) # {for age to have only integer value}
-
-      # age restriction.
-      if spy_age > 12 and spy_age < 50:
-
-          spy_rating = input("What is your spy rating?")
-
-          if spy_rating > 4.5:
-              print 'Great ace!'
-          elif spy_rating > 3.5 and spy_rating <= 4.5:
-              print 'You are one of the good ones.'
-          elif spy_rating >= 2.5 and spy_rating <= 3.5:
-              print 'You can always do better'
-          else:
-              print 'We can always use somebody to help in the office.'
-
-          spy_is_online = True
-
-          # String integer objects typecasting using str(), repr() or backtick
-          # print "Authentication complete. Welcome " + spy_name + " age: " + str(spy_age) + " and rating of: " + str(spy_rating) + " Proud to have you onboard"
-          # print "Authentication complete. Welcome " + spy_name + " age: " + repr(spy_age) + " and rating of: " + repr(spy_rating) + " Proud to have you onboard"
-          # print "Authentication complete. Welcome " + spy_name + " age: " + `spy_age` + " and rating of: " + `spy_rating` + " Proud to have you onboard"
-
-          # using placeholders
-          print "Authentication complete. Welcome %s age: %d and rating of: %.2f Proud to have you onboard" % (spy_name,spy_age,spy_rating)
-
-          start_chat(spy_name,spy_age,spy_rating)
+    spy['name'] = raw_input("Welcome to spy chat, you must tell me your spy name first: ")
 
 
-      else:
-          print 'Sorry you are not of the correct age to be a spy'
+    # spy_name cannot be empty and can have only alphabets.
+    if len(spy['name']) > 0 and spy['name'].isalpha():
+
+        print 'Welcome ' + spy['name'] + '. Glad to have you back with us.'
+
+        spy['salutation'] = raw_input("Should I call you Mister or Miss?: ")
+
+        spy['name'] = spy['salutation'] + " " + spy['name']
+
+        print "Alright " + spy['name'] + ". I'd like to know a little bit more about you before we proceed..."
 
 
-  else:
 
-      print "A spy needs to have a valid name and name of spy can only have alphabets. Try again please."
+        # spy_age = input("What is your age?")
+        spy['age'] = int(raw_input("What is your age?")) # {for age to have only integer value}
+
+        # age restriction.
+        if spy['age'] > 12 and spy['age'] < 50:
+
+            spy['rating'] = input("What is your spy rating?")
+
+            if spy['rating'] > 4.5:
+                print 'Great ace!'
+            elif spy['rating'] > 3.5 and spy['rating'] <= 4.5:
+                print 'You are one of the good ones.'
+            elif spy['rating'] >= 2.5 and spy['rating'] <= 3.5:
+                print 'You can always do better'
+            else:
+                print 'We can always use somebody to help in the office.'
+
+            spy['is_online'] = True
+
+            # String integer objects typecasting using str(), repr() or backtick
+            # print "Authentication complete. Welcome " + spy_name + " age: " + str(spy_age) + " and rating of: " + str(spy_rating) + " Proud to have you onboard"
+            # print "Authentication complete. Welcome " + spy_name + " age: " + repr(spy_age) + " and rating of: " + repr(spy_rating) + " Proud to have you onboard"
+            # print "Authentication complete. Welcome " + spy_name + " age: " + `spy_age` + " and rating of: " + `spy_rating` + " Proud to have you onboard"
+
+            # using placeholders
+            print "Authentication complete. Welcome %s age: %d and rating of: %.2f Proud to have you onboard" % (spy['name'],spy['age'],spy['rating'])
+
+            start_chat(spy)
+
+
+        else:
+
+            print 'Sorry you are not of the correct age to be a spy'
+
+
+    else:
+
+        print "A spy needs to have a valid name and name of spy can only have alphabets. Try again please."

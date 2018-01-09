@@ -1,11 +1,9 @@
-spy_name = 'Samar'
+spy = {
+    'name': 'Samar',
+    'salutation': 'Miss.',
+    'age': 19,
+    'rating': 4.0,
+    'is_online': True
 
-spy_salutation = 'Miss.'
-
-spy_age = 24
-
-spy_rating = 4.0
-
-spy_is_online = True
-
+}
 
