@@ -1,4 +1,6 @@
 from spy_details import spy
+from steganography.steganography import Steganography
+from datetime import datetime
 
 import sys
 
@@ -108,37 +110,64 @@ def add_friend():
 
 ###### SELECT A FRIEND MODULE
 
-
-def select_friend():
+def select_a_friend():
 
 
     item_number = 0
 
     for friend in friends:
-
-        print '%s aged %d with rating %.2f is online' % (friend['name'], friend['age'], friend['rating'])
-
+        print '%d. %s aged %d with rating %.2f is online' % (item_number + 1, friend['name'],
+                                                                 friend['age'],
+                                                                 friend['rating'])
         item_number = item_number + 1
 
-    friend_selection = int(raw_input("\nSelect Friend "))
+    friend_choice = input("Choose from your friends")
+
+    friend_choice_position = friend_choice - 1
+
+    return friend_choice_position
 
 
-    if len(friends) >= friend_selection:
+def send_message():
 
-        selected_friend = friends(friend_selection-1)
+    friend_choice = select_a_friend()
 
-    if selected_friend:
+    original_image = input("What is the name of the image?")
 
-        print 'Your selected friend is %s' % (selected_friend)
+    output_path = "output.jpg"
 
-        print"friend successfully selected"
+    text = input("What do you want to say? ")
 
-    else:
+    Steganography.encode(original_image, output_path, text)
 
-        print 'You do not have any friend yet to select'
+    new_chat = {
+        "message": text,
+        "time": datetime.now(),
+        "sent_by_me": True
+    }
 
-    return friend_selection-1
+    friends[friend_choice]['chats'].append(new_chat)
 
+    print "Your secret message image is ready!"
+
+
+def read_message():
+
+    sender = select_a_friend()
+
+    output_path = input("What is the name of the file?")
+
+    secret_text = Steganography.decode(output_path)
+
+    new_chat = {
+        "message": secret_text,
+        "time": datetime.now(),
+        "sent_by_me": False
+    }
+
+    friends[sender]['chats'].append(new_chat)
+
+    print "Your secret message has been saved!"
 
 ###### START CHAT METHOD
 
@@ -169,10 +198,12 @@ def start_chat(spy):
         elif menu_choice == 3:
 
             print "%s you should have secrecy let\'s send secret messages to your friends" % (spy['name'])
+            send_message()
 
         elif menu_choice == 4:
 
             print "Hey %s let\'s read personal messages" % (spy['name'])
+            read_message()
 
         elif menu_choice == 5:
 
