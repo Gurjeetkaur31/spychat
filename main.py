@@ -1,15 +1,32 @@
-from spy_details import spy, friends, chatmessage
+# **+@ To Use CSV Functionality @+**
+import csv
 
+#** +@ To Import Elements Of Other Class @+**
+from spy_details import spy, friends, Spy, ChatMessage, chatmessage
+
+#** +@ To Check Image Extension @+**
 import imghdr
-from steganography.steganography import Steganography
-from datetime import datetime
 
+#** +@ To Implement Hiding Text In Image @+**
+from steganography.steganography import Steganography
+
+#** +@ To Use Different Colors In Texts @+**
+from colorama import init
+from colorama import Fore, Style, Back
+
+from termcolor import colored
+init(autoreset=False,strip=None,convert=None,wrap=True)
+
+from datetime import datetime
+import os
 import sys
 
+# |+@pre stored status message list @+|
 STATUS_MESSAGES = ['My name is Bond, James Bond', 'Shaken, not stirred.', 'Keeping the British end up, Sir']
 
+chats = []
 
-#****************************** +@ ADD STATUS MODULE @+ *************************************************************************************************
+#*********************** +@ ADD STATUS MODULE @+ ***************************************************************************
 
 def add_status(current_status_message):
 
@@ -70,34 +87,95 @@ def add_status(current_status_message):
     return updated_status_message
 
 
+#*********************** +@ MODULE TOREAD CHATS OF OTHERS @+ ***************************************************************************
 
-#****************************** +@ ADD A FRIEND MODULE @+ *******************************************************************************************
+def read_chat_of_a_friend():
+
+    if len(friends) > 0:
+
+        print "Select the friend whose chat you wanna have ur eye on.."
+
+        friend_choice = select_a_friend()
+
+        sent_to = friends[friend_choice].name
+
+        with open('chats.csv', 'rU') as chat:
+
+            reader = csv.reader(chat)
+
+            for row in reader:
+                if row[1] == sent_to:
+                    '''
+                    print 'Message is :' + (Fore.BLACK + row[2])
+                    print "Time       : " + (Fore.BLUE+ row[3])
+                    print "Sent_by    : " + (Fore.CYAN + row[0])
+                    print 'Sent to    :' + (Fore.RED + row[1])
+                    '''
+                    print 'Message is :',colored(row[2], 'red')#,attrs=['bold','concealed'])
+                    print "Time       : ",colored(row[3], 'blue')#,attrs=['blink'])
+                    print "Sent_by    : ",colored(row[0], 'cyan')#,attrs=['underline','blink'])
+                    print 'Sent to    :',colored(row[1], 'red')#,attrs=['dark','bold'])
+
+
+    else:
+
+        print"Hey Spy! You don't have friends yet..... Add friends soon... GOOD LUCK.."
+
+
+#*********************** +@ LOAD FRIENDS MODULE @+ ***************************************************************************
+
+def load_friends():
+
+    with open('friends.csv', 'rb') as friends_data:
+      reader = csv.reader(friends_data)
+
+
+      for row in reader:
+           #print row[2]
+           spy = Spy(name=row[0], salutation=row[1], age=`row[2]`, rating=`row[3]`)
+           friends.append(spy)
+
+
+
+#*********************** +@ MODULE TO LOAD CHATS @+ ***************************************************************************
+
+def load_chat():
+
+    with open('chats.csv', 'rU') as message:
+        reader = csv.reader(message)
+
+        for row in reader:
+            read = ChatMessage(sent_by=row[0], sent_to=row[1], text=row[2])
+            chats.append(read)
+
+    for chat in chats:
+        print "%s has sent message %s to %s" % (chat.sent_by, chat.text, chat.sent_to)
+
+
+#******************* +@ ADD A FRIEND MODULE @+ *****************************************************************************
 
 def add_friend():
 
+    name = input("Please add your friend's name: ")
 
-    new_friend = {
+    salutation = input("Are they Mr. or Ms.?: ")
 
-        'name': '',
-        'salutation': '',
-        'age': 0,
-        'rating': 0.0
+    name = salutation + " " + name
 
-    }
+    age = input("Age?")
 
-    new_friend['name'] = raw_input("Please add your friend's name: ")
+    rating = input("Spy rating?")
 
-    new_friend['salutation'] = raw_input("Are they Mr. or Ms.?: ")
+    load_friends()
 
-    new_friend['name'] = new_friend['salutation'] + " " + new_friend['name']
-
-    new_friend['age'] = raw_input("Age?")
-
-    new_friend['rating'] = raw_input("Spy rating?")
-
-    if len(new_friend['name']) > 0 and new_friend['age'] > 12 and new_friend['rating'] >= spy.rating:
-
+    if len(name) > 0 and age > 12 and rating >= spy.rating:
+        new_friend = Spy(name=name,salutation=salutation,age=age,rating=rating)
         friends.append(new_friend)
+
+
+        with open('friends.csv', 'a') as friends_data:
+            writer = csv.writer(friends_data)
+            writer.writerow([new_friend.name,new_friend.salutation,new_friend.age,new_friend.rating,new_friend.is_online])
 
         print 'Friend Added Successfully!'
 
@@ -105,21 +183,21 @@ def add_friend():
 
         print 'Sorry! Invalid entry. We can\'t add spy with the details you provided'
 
+    load_friends()
     return len(friends)
 
 
-#****************************** +@ SELECT A FRIEND MODULE @+ *******************************************************************************************
+#***************** +@ SELECT A FRIEND MODULE @+ ****************************************************************************
 
 def select_a_friend():
 
-
+    load_friends()
     item_number = 0
 
     for friend in friends:
 
-        print '%d. %s aged %d with rating %.2f is online' % (item_number + 1, friend.name,
-                                                                   friend.age,
-                                                                 friend.rating)
+        print "%d. %s is online" % (item_number+1 , friend.name)
+
         item_number = item_number + 1
 
     friend_choice = input("Choose from your friends")
@@ -129,29 +207,68 @@ def select_a_friend():
     return friend_choice_position
 
 
-#****************************** +@ SEND A SECRET MESSAGE MODULE @+ ***********************************************************************
+#*********************** +@ MODULE TO TACKLE SPECIAL MESSAGES @+ ***************************************************************************
+
+def special_message(original_image,output_path,text):
+
+    if (text == "SOS"):
+        text = "Ballu Crazy"
+        Steganography.encode(original_image, output_path, text)
+
+    elif(text == "SAVE ME"):
+        text = "Kiran Don Save Me"
+        Steganography.encode(original_image, output_path, text)
+
+    elif(text == "EMERGENCY"):
+        text = "O... Saini Emergency, Call Pazim!!"
+        Steganography.encode(original_image, output_path, text)
+
+    elif(text == "SECRECY"):
+        text = "Have Secrecy, It's Needed"
+        Steganography.encode(original_image, output_path, text)
+
+
+#**************** +@ SEND A SECRET MESSAGE MODULE @+ ***********************************************************************
 
 def send_message():
 
-    friend_choice = select_a_friend()
+    if len(friends) > 0:
 
-    original_image = input("What is the name of the image?")
-    im = imghdr.what('input.jpg') # To Check Type Of File Entered.....
-    print 'The type of file entered is %s' %(im)
+        friend_choice = select_a_friend()
 
-    output_path = "output.jpg"
+        original_image = input("What is the name of the image?")
 
-    text = input("What do you want to say? ")
+        im = imghdr.what('input.jpg') # To Check Type Of File Entered.....
+        print 'The type of file entered is %s' %(im)
 
-    Steganography.encode(original_image, output_path, text)
+        output_path = "output.jpg"
+
+        text = input("What do you want to say? ")
+        if (text == "SOS" or text == "SAVE ME" or text == "EMERGENCY" or text == "SECRECY"):
+
+            special_message(original_image,output_path,text)
+
+        else:
+
+            Steganography.encode(original_image, output_path, text)
+
+        print(Fore.LIGHTMAGENTA_EX + 'Message Sent Successfully')
+
+        new_chat = ChatMessage('','','',sent_by_me = True)
+
+        friends[friend_choice].chats.append(new_chat)
+
+        with open('chats.csv', 'a' ) as chat_data:
+            writer = csv.writer(chat_data)
+            writer.writerow([spy.name,friends[friend_choice].name, text,new_chat.time,new_chat.sent_by_me])
+
+        print "Your secret message image is ready!"
+
+    else:
+        print "Add Friends Soon.........!"
 
 
-    friends[friend_choice].chats.append(chatmessage)
-
-    print "Your secret message image is ready!"
-
-
-#****************************** +@ READ A SECRET MESSAGE MODULE @+ ***********************************************************************
+#**************** +@ READ AND SAVE SECRET MESSAGE MODULE @+ ***********************************************************************
 
 def read_message():
 
@@ -161,12 +278,12 @@ def read_message():
 
     secret_text = Steganography.decode(output_path)
 
-
     friends[sender].chats.append(chatmessage)
 
-    print "Your secret message has been saved!"
+    print (Fore.BLUE + "Your secret message has been saved!")
 
-#****************************** +@ START CHAT MODULE @+ ***************************************************************************************
+
+#******************** +@ START CHAT MODULE @+ ***************************************************************************************
 
 def start_chat(spy):
 
@@ -205,6 +322,7 @@ def start_chat(spy):
         elif menu_choice == 5:
 
             print "Oh Yea!!\n %s now let\'s read chats from other users" % (spy.name)
+            read_chat_of_a_friend()
 
         elif menu_choice == 6:
 
@@ -240,7 +358,7 @@ else:
 
     print "Dear Spy Firstly Create A New Account So Enter Your Details Carefully."
 
-    spy.name = raw_input("Welcome to spy chat, you must tell me your spy name first: ")
+    spy.name = input("Welcome to spy chat, you must tell me your spy name first: ")
 
 
     # spy_name cannot be empty and can have only alphabets.
@@ -248,7 +366,7 @@ else:
 
         print 'Welcome ' + spy.name + '. Glad to have you back with us.'
 
-        spy.salutation = raw_input("Should I call you Mister or Miss?: ")
+        spy.salutation = input("Should I call you Mister or Miss?: ")
 
         spy.name = spy.salutation + " " + spy.name
 
@@ -256,8 +374,8 @@ else:
 
 
 
-        # spy_age = input("What is your age?")
-        spy.age = int(raw_input("What is your age?")) # {for age to have only integer value}
+        spy_age = input("What is your age?")
+        #spy.age = int(raw_input("What is your age?")) # {for age to have only integer value}
 
         # age restriction.
         if spy.age > 12 and spy.age < 50:
@@ -273,7 +391,7 @@ else:
             else:
                 print 'We can always use somebody to help in the office.'
 
-            spy['is_online'] = True
+            #spy['is_online'] = True
 
             # String integer objects typecasting using str(), repr() or backtick
             # print "Authentication complete. Welcome " + spy_name + " age: " + str(spy_age) + " and rating of: " + str(spy_rating) + " Proud to have you onboard"

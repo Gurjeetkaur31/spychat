@@ -1,13 +1,7 @@
-spy = {
-    'name': '',
-    'salutation': '',
-    'age': 0,
-    'rating': 0.0,
-    'is_online': False
-}
+from colorama import Fore, Style, Back
 
-new_chat = {
-        "message": text,
-        "time": datetime.now(),
-        "sent_by_me": True
-    }
+print (Style.DIM +'hello')
+print(Fore.LIGHTMAGENTA_EX + 'hhh')
+
+from termcolor import colored
+print "hrru",colored(12,'red',attrs=['bold','concealed'])
