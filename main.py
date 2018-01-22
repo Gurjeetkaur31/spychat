@@ -15,7 +15,7 @@ from colorama import init
 from colorama import Fore, Style, Back
 
 from termcolor import colored
-init(autoreset=False,strip=None,convert=None,wrap=True)
+
 
 from datetime import datetime
 import os
@@ -145,7 +145,7 @@ def load_chat():
         reader = csv.reader(message)
 
         for row in reader:
-            read = ChatMessage(sent_by=row[0], sent_to=row[1], text=row[2])
+            read = ChatMessage(sent_by=row[0], sent_to=row[1], text=row[2],sent_by_me=True)
             chats.append(read)
 
     for chat in chats:
@@ -287,6 +287,8 @@ def read_message():
 
 def start_chat(spy):
 
+    load_chat()
+
     show_menu = True
 
     current_status_message = None
@@ -350,7 +352,7 @@ existing = raw_input(question)
 if (existing.upper() == "Y"):
 
   print "Welcome %s to spychat having age %d with rating %.2f" % (spy.name,spy.age,spy.rating)
-
+  load_friends()
   start_chat(spy)
 
 
